@@ -1,5 +1,7 @@
 # Parental Controls Automation System
 
+Used to easily control devices and block access for kids that haven't done their chores.
+
 A comprehensive parental controls system that integrates multiple platforms and provides network-level blocking through OPNsense firewall integration.
 
 ## 🎯 Overview
@@ -50,8 +52,8 @@ This system provides automated parental controls with:
 
 ### 1. Clone Repository
 ```bash
-git clone https://github.com/yourusername/parental-controls-automation.git
-cd parental-controls-automation
+git clone https://github.com/armnhamcigol/parental_controls.git
+cd parental_controls
 ```
 
 ### 2. Configure Device List
