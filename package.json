@@ -1,0 +1,46 @@
+{
+  "name": "parental-controls-automation",
+  "version": "1.0.0",
+  "description": "Local automation system for managing children's screen time across Nintendo Switch, Google Family, Microsoft Family, and OPNSense firewall",
+  "main": "src/controller.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/controller.js",
+    "dev": "node --watch src/controller.js",
+    "web": "node src/web/server.js",
+    "test": "node --test tests/unit/*.js",
+    "test:integration": "node --test tests/integration/*.js",
+    "validate": "node src/utils/validate.js",
+    "setup": "node scripts/setup.js"
+  },
+  "keywords": [
+    "parental-controls",
+    "nintendo-switch",
+    "google-family",
+    "microsoft-family",
+    "opnsense",
+    "firewall",
+    "automation",
+    "local"
+  ],
+  "author": "Andrew McCarville",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "axios": "^1.6.0",
+    "ssh2": "^1.15.0",
+    "node-cron": "^3.0.3",
+    "winston": "^3.11.0",
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.3.1",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.1.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

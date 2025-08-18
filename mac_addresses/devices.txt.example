@@ -1,0 +1,21 @@
+# Parental Control Device List
+# Format: MAC Address, Device Name, Notes
+# 
+# Example entries (replace with your actual devices):
+# aa:bb:cc:dd:ee:ff, Johnny's Nintendo Switch, Gaming device
+# 11:22:33:44:55:66, Sarah's iPad, Tablet device
+# 77:88:99:aa:bb:cc, Family TV, Smart TV with apps
+#
+# To use this file:
+# 1. Copy this file to devices.txt
+# 2. Replace the example entries with your actual device MAC addresses
+# 3. You can find MAC addresses in your router's connected devices list
+# 4. Each line should have: MAC address, device name, optional notes
+# 5. Lines starting with # are comments and will be ignored
+#
+# How to find MAC addresses:
+# - Router admin interface: Usually under "Connected Devices" or "DHCP Clients"
+# - Windows: Run "ipconfig /all" in command prompt
+# - macOS/Linux: Run "ifconfig" in terminal
+# - Android: Settings > About phone > Status > Wi-Fi MAC address
+# - iOS: Settings > General > About > Wi-Fi Address
