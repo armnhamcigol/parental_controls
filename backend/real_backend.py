@@ -6,7 +6,9 @@ Replaces demo mode with actual firewall control
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import os
 import sys
+import logging
 from pathlib import Path
 from datetime import datetime
 
@@ -19,10 +21,44 @@ from nintendo_integration import NintendoSwitchManager
 app = Flask(__name__)
 CORS(app)
 
+# Configure logging
+logging.basicConfig(level=logging.INFO, 
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    handlers=[logging.StreamHandler(),
+                              logging.FileHandler(Path(__file__).parent.parent / 'logs' / 'backend.log')])
+logger = logging.getLogger(__name__)
+
 # Initialize managers
 mac_manager = MACAddressManager()
 opnsense_manager = OPNsenseManager()
 nintendo_manager = NintendoSwitchManager()
+
+# Initialize MCP server if enabled
+try:
+    from mcp_server import MCPOrchestrator, register_ai_routes
+    
+    # Get environment variables for MCP configuration
+    ai_mode = os.environ.get('AI_MCP_MODE', 'staging')
+    ollama_host = os.environ.get('OLLAMA_HOST', 'http://192.168.123.240:11434')
+    ollama_model = os.environ.get('OLLAMA_MODEL', 'llama3.1:8b-instruct')
+    
+    # Initialize AI orchestrator
+    ai_orchestrator = MCPOrchestrator(
+        opnsense_manager=opnsense_manager,
+        mac_manager=mac_manager,
+        nintendo_manager=nintendo_manager,
+        ollama_host=ollama_host,
+        ollama_model=ollama_model,
+        logger=logging.getLogger('ai_assistant')
+    )
+    
+    # Register AI routes based on mode
+    logger.info(f"Initializing AI assistant in {ai_mode.upper()} mode")
+    register_ai_routes(app, ai_orchestrator, mode=ai_mode)
+    ai_enabled = True
+except Exception as e:
+    logger.error(f"Failed to initialize AI assistant: {str(e)}")
+    ai_enabled = False
 
 @app.route('/api/status', methods=['GET'])
 def get_status():
@@ -193,13 +229,32 @@ def health_check():
         devices = mac_manager.get_all_devices()
         mac_manager_ok = isinstance(devices, list)
         
+        # Check Ollama connection if AI is enabled
+        ollama_status = 'not_configured'
+        if ai_enabled:
+            try:
+                import requests
+                response = requests.get(ollama_host.rstrip('/'), timeout=5)
+                ollama_status = 'healthy' if response.ok else 'error'
+            except Exception as e:
+                logger.error(f"Ollama connection check failed: {str(e)}")
+                ollama_status = 'error'
+        
+        status = 'healthy' if (opnsense_ok and mac_manager_ok and (ollama_status == 'healthy' or ollama_status == 'not_configured')) else 'degraded'
+        
         return jsonify({
-            'status': 'healthy' if (opnsense_ok and mac_manager_ok) else 'degraded',
+            'status': status,
             'service': 'Real Parental Controls Backend',
             'version': '1.0.0',
             'components': {
                 'opnsense': 'healthy' if opnsense_ok else 'error',
-                'mac_manager': 'healthy' if mac_manager_ok else 'error'
+                'mac_manager': 'healthy' if mac_manager_ok else 'error',
+                'ollama': ollama_status
+            },
+            'ai_assistant': {
+                'enabled': ai_enabled,
+                'mode': os.environ.get('AI_MCP_MODE', 'staging') if ai_enabled else 'disabled',
+                'host': ollama_host if ai_enabled else None
             },
             'timestamp': datetime.now().isoformat()
         })
@@ -498,6 +553,7 @@ def index():
             <a href="http://192.168.123.7:8443">📱 Main Dashboard</a>
             <a href="/health">🔍 Health Check</a>
             <a href="/api/status">📊 Status API</a>
+            <a href="/ai-staging">🤖 Use AI to control access</a>
         </div>
         
         <h3>🔧 Available API Endpoints:</h3>
@@ -538,9 +594,26 @@ if __name__ == '__main__':
     except Exception as e:
         print(f"❌ MAC Manager: Failed - {e}")
     
+    # Test Ollama if AI is enabled
+    if ai_enabled:
+        try:
+            import requests
+            print("\n🤖 Testing Ollama connection...")
+            response = requests.get(ollama_host.rstrip('/'), timeout=5)
+            if response.ok:
+                print(f"✅ Ollama: Connected at {ollama_host}")
+                print(f"🧠 Using model: {ollama_model}")
+            else:
+                print(f"❌ Ollama: Failed - HTTP {response.status_code}")
+        except Exception as e:
+            print(f"❌ Ollama: Failed - {str(e)}")
+    
     print("\n🌐 Starting web server...")
     print("📱 Main Dashboard: http://192.168.123.7:8443")
     print("🔧 Backend API: http://localhost:3001")
     print("💻 MAC Management: http://localhost:5000")
+    
+    if ai_enabled:
+        print(f"🤖 AI Assistant: http://localhost:3001/ai-staging (mode: {ai_mode})")
     
     app.run(host='0.0.0.0', port=3001, debug=True)

@@ -41,6 +41,13 @@ This system provides automated parental controls with:
 - Google Family API integration
 - Microsoft Family API integration
 
+### 🤖 AI Assistant (New!)
+- **Conversational Control**: Natural language interface for parental controls
+- **Ollama Integration**: Local LLM powered by your own Ollama instance
+- **Tool Calling**: AI can directly execute parental control actions
+- **Staging Environment**: Safe testing environment with feature flags
+- **Audit Logging**: Comprehensive logging of all AI actions
+
 ## 📋 Prerequisites
 
 - **Raspberry Pi** (3B+ or newer recommended)
@@ -149,6 +156,135 @@ parental-controls-automation/
 ├── tests/                   # Test files
 └── archive/                 # Development artifacts
 ```
+
+## 🤖 AI Assistant Configuration
+
+### Environment Variables
+The AI Assistant requires several environment variables:
+
+```bash
+# AI Feature Flag (staging or prod)
+export AI_MCP_MODE="staging"
+
+# API Key for AI endpoints (generate a strong random key)
+export AI_API_KEY="your-secure-api-key-here"
+
+# Ollama connection (your local LLM instance)
+export OLLAMA_HOST="http://192.168.123.240:11434"
+export OLLAMA_MODEL="llama3.1:8b-instruct"
+```
+
+### Ollama Setup
+1. **Install Ollama** on your LLM server (192.168.123.240):
+   ```bash
+   curl -fsSL https://ollama.ai/install.sh | sh
+   ```
+
+2. **Pull the required model**:
+   ```bash
+   ollama pull llama3.1:8b-instruct
+   ```
+
+3. **Verify tool support**:
+   ```bash
+   curl -X POST http://192.168.123.240:11434/api/chat \
+     -H "Content-Type: application/json" \
+     -d '{
+       "model": "llama3.1:8b-instruct",
+       "messages": [{"role": "user", "content": "Test"}],
+       "tools": [],
+       "stream": false
+     }'
+   ```
+
+### AI Assistant Usage
+
+#### Access Methods
+- **Main Dashboard**: Click "🤖 Use AI to control access" button
+- **Direct URL (Staging)**: http://localhost:3001/ai-staging
+- **Direct URL (Production)**: http://localhost:3001/ai (after promotion)
+
+#### Example Commands
+The AI Assistant understands natural language commands:
+
+- **"What is the current system status?"** - Gets comprehensive status
+- **"Block all devices now"** - Activates parental controls
+- **"Allow internet access"** - Deactivates parental controls
+- **"Add device named Johnny iPhone with MAC AA:BB:CC:DD:EE:FF"** - Adds new device
+- **"Enable device ID 3"** - Enables specific device for monitoring
+- **"Turn off Nintendo controls"** - Disables Nintendo Switch restrictions
+- **"Set Nintendo bedtime from 21:00 to 07:00"** - Sets bedtime restrictions
+- **"Show me all devices"** - Lists all managed devices
+
+#### API Usage
+Direct API access for integration:
+
+```bash
+# Chat with AI Assistant
+curl -X POST http://localhost:3001/api/ai-staging/chat \
+  -H "Content-Type: application/json" \
+  -H "X-Api-Key: your-api-key" \
+  -d '{
+    "session_id": "test-session",
+    "message": "Block all devices"
+  }'
+```
+
+#### Tool Capabilities
+The AI can execute these parental control actions:
+
+| Tool | Description | Example |
+|------|-------------|----------|
+| `toggle_parental_controls` | Enable/disable network blocking | "Block all devices" |
+| `get_system_status` | Get current status | "What's the status?" |
+| `add_device` | Add device to management | "Add Johnny's iPad" |
+| `update_device` | Modify device settings | "Enable device 3" |
+| `delete_device` | Remove device | "Remove device 5" |
+| `sync_devices` | Sync with OPNsense | "Sync devices" |
+| `nintendo_toggle_controls` | Nintendo on/off | "Turn off Nintendo" |
+| `nintendo_set_playtime` | Set daily limits | "Set 2 hour limit" |
+| `nintendo_set_bedtime` | Set sleep times | "Bedtime 9 PM to 7 AM" |
+| `get_nintendo_status` | Nintendo status | "Nintendo status?" |
+| `get_nintendo_usage` | Usage statistics | "Show Nintendo usage" |
+
+### Security Considerations
+
+- **API Key Protection**: Never commit API keys to version control
+- **Rate Limiting**: 10 requests per minute per session by default
+- **Audit Logging**: All AI actions logged to `logs/ai_assistant.log`
+- **Staging First**: Test in staging before production deployment
+- **LAN Only**: Ollama and AI endpoints should only be accessible on local network
+
+### Troubleshooting AI Assistant
+
+#### Connection Issues
+1. **Check Ollama Status**:
+   ```bash
+   curl http://192.168.123.240:11434/
+   ```
+   Should return Ollama version info.
+
+2. **Check Health Endpoint**:
+   ```bash
+   curl http://localhost:3001/health
+   ```
+   Look for `ollama: "healthy"` in response.
+
+3. **Check Logs**:
+   ```bash
+   tail -f logs/ai_assistant.log
+   ```
+
+#### Common Error Messages
+- **"AI assistant not properly configured"**: Missing AI_API_KEY environment variable
+- **"Ollama connection error"**: Cannot reach Ollama host, check network and service
+- **"Rate limit exceeded"**: Too many requests, wait 1 minute
+- **"Invalid MAC address format"**: Use format AA:BB:CC:DD:EE:FF
+
+#### Model Performance
+- **Slow Responses**: Consider using a smaller model like `llama3.1:8b`
+- **Inaccurate Actions**: Verify model supports function/tool calling
+- **Memory Usage**: Monitor Ollama server resources
 
 ## 🔧 Configuration
 
