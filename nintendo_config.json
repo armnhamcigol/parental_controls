@@ -1,0 +1,9 @@
+{
+  "session_token": "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2FjY291bnRzLm5pbnRlbmRvLmNvbSIsImF1ZCI6IjU0Nzg5YmVmYjM5MWE4MzgiLCJleHAiOjE4MTg2Mjg3MjksInN1YiI6Ijc5YjdiNTYwNjM4NmQ2YTkiLCJqdGkiOjE4MTY0NjAyOTgyLCJzdDpzY3AiOlswLDgsMTcsMzIwLDMyMSwzMjIsMzIzLDMyNCwzMjUsMzI2LDMyNywzMjgsMzI5XSwidHlwIjoic2Vzc2lvbl90b2tlbiIsImlhdCI6MTc1NTU1NjcyOX0.s12caOUt4jyCMT9pMe2n4Rx-Ug1yjTVZoseeXIGVk-Q",
+  "device_mapping": {
+    "example_device_1": "real_nintendo_device_id_1",
+    "example_device_2": "real_nintendo_device_id_2"
+  },
+  "last_updated": "2025-08-18T17:34:43.386522",
+  "setup_completed": true
+}

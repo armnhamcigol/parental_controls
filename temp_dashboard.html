@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parental Controls Dashboard</title>
+    <link rel="stylesheet" href="style.css?v=11">
+    <link rel="icon" href="data:image/svg+xml,%3csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3e%3ctext y=%22.9em%22 font-size=%2290%22%3e≡ƒ¢í∩╕Å%3c/text%3e%3c/svg%3e">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>≡ƒ¢í∩╕Å Parental Controls</h1>
+            <p>Network & platform controls for kids' screen time and gaming access</p>
+        </header>
+
+        <main>
+            <!-- System Status -->
+            <div class="status-panel">
+                <div class="status-item">
+                    <span class="status-label">System Status:</span>
+                    <span id="systemStatus" class="status-value">Loading...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Last Action:</span>
+                    <span id="lastAction" class="status-value">None</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Uptime:</span>
+                    <span id="uptime" class="status-value">0s</span>
+                </div>
+            </div>
+
+            <!-- Main Network Toggle -->
+            <div class="toggle-section">
+                <h2>≡ƒîÉ Network Controls</h2>
+                <div class="toggle-container">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="controlsToggle">
+                        <span class="slider"></span>
+                    </label>
+                    <div class="toggle-labels">
+                        <span class="toggle-label off">≡ƒÄ« Internet Allowed</span>
+                        <span class="toggle-label on">≡ƒÜ½ Network Blocked</span>
+                    </div>
+                </div>
+                
+                <div class="toggle-description">
+                    <p id="toggleDescription">Click to toggle network-level parental controls</p>
+                </div>
+            </div>
+
+            <!-- Nintendo Switch Controls -->
+            <div class="nintendo-section">
+                <h2>≡ƒÄ« Nintendo Switch Controls</h2>
+                <div class="nintendo-controls">
+                    <!-- Authentication Panel -->
+                    <div id="nintendoAuth" class="nintendo-auth" style="display: none;">
+                        <div class="auth-panel">
+                            <h3>Nintendo Account Login</h3>
+                            <p>Please enter your Nintendo Account credentials to manage parental controls:</p>
+                            <form id="nintendoLoginForm">
+                                <div class="form-group">
+                                    <label for="nintendoUsername">Nintendo Account Email:</label>
+                                    <input type="email" id="nintendoUsername" required placeholder="your@email.com">
+                                </div>
+                                <div class="form-group">
+                                    <label for="nintendoPassword">Password:</label>
+                                    <input type="password" id="nintendoPassword" required placeholder="Your password">
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn-primary">≡ƒöÉ Connect Nintendo Switch</button>
+                                    <button type="button" class="btn-secondary" onclick="hideNintendoAuth()">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Nintendo Status and Controls -->
+                    <div id="nintendoControls" class="nintendo-status">
+                        <div class="nintendo-connection">
+                            <div class="connection-status">
+                                <span id="nintendoConnectionStatus" class="status-indicator">ΓÜ¬ Not Connected</span>
+                                <button id="nintendoConnectBtn" class="btn-connect" onclick="showNintendoAuth()">
+                                    ≡ƒöù Connect Nintendo Switch
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Nintendo Controls (shown when authenticated) -->
+                        <div id="nintendoAuthenticatedControls" class="nintendo-authenticated" style="display: none;">
+                            <div class="nintendo-device-info">
+                                <h4>≡ƒÄ« Connected Device: <span id="nintendoDeviceName">Family Nintendo Switch</span></h4>
+                            </div>
+
+                            <div class="nintendo-toggle">
+                                <label class="toggle-switch nintendo-switch">
+                                    <input type="checkbox" id="nintendoControlsToggle">
+                                    <span class="slider nintendo"></span>
+                                </label>
+                                <div class="toggle-labels">
+                                    <span class="toggle-label off">≡ƒÄ« Gaming Allowed</span>
+                                    <span class="toggle-label on">≡ƒÜ½ Restricted</span>
+                                </div>
+                            </div>
+
+                            <div class="nintendo-status-grid">
+                                <div class="status-card">
+                                    <h4>ΓÅ░ Today's Play Time</h4>
+                                    <p id="nintendoTodayTime" class="stat-value">45 minutes</p>
+                                    <small>Limit: 120 minutes/day</small>
+                                </div>
+                                <div class="status-card">
+                                    <h4>≡ƒîÖ Bedtime Mode</h4>
+                                    <p id="nintendoBedtime" class="stat-value">9:00 PM - 7:00 AM</p>
+                                    <small>Currently: <span id="nintendoBedtimeStatus">Active</span></small>
+                                </div>
+                                <div class="status-card">
+                                    <h4>≡ƒÄ« Most Played</h4>
+                                    <p id="nintendoMostPlayed" class="stat-value">Super Mario Odyssey</p>
+                                    <small>This week</small>
+                                </div>
+                            </div>
+
+                            <div class="nintendo-actions">
+                                <button class="action-btn nintendo" onclick="nintendoQuickAction('disable', 30)">
+                                    ΓÅ░ Allow 30 min
+                                </button>
+                                <button class="action-btn nintendo" onclick="nintendoQuickAction('disable', 60)">
+                                    ≡ƒôÜ Study break (1hr)
+                                </button>
+                                <button class="action-btn nintendo emergency" onclick="nintendoQuickAction('disable', 0)">
+                                    ≡ƒÜ¿ Emergency access
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <h3>≡ƒÜÇ Quick Actions</h3>
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="toggleWithReason('Kids finished chores')">
+                        Γ£à Chores Complete
+                    </button>
+                    <button class="action-btn" onclick="toggleWithDuration('Break time', 30)">
+                        ΓÅ░ 30 Min Break
+                    </button>
+                    <button class="action-btn" onclick="toggleWithDuration('Homework time', 60)">
+                        ≡ƒôÜ 1 Hour Study
+                    </button>
+                    <button class="action-btn emergency" onclick="toggleWithReason('Emergency override')">
+                        ≡ƒÜ¿ Emergency
+                    </button>
+                </div>
+            </div>
+
+            <!-- Platform Status -->
+            <div class="platform-status">
+                <h3>≡ƒôè Platform Status</h3>
+                <div class="platforms">
+                    <div class="platform-item">
+                        <span class="platform-name">≡ƒÄ« Nintendo Switch</span>
+                        <span id="nintendoStatus" class="platform-status-badge">Not Connected</span>
+                    </div>
+                    <div class="platform-item">
+                        <span class="platform-name">≡ƒô▒ Google Family</span>
+                        <span id="googleStatus" class="platform-status-badge">Available</span>
+                    </div>
+                    <div class="platform-item">
+                        <span class="platform-name">≡ƒûÑ∩╕Å Microsoft Family</span>
+                        <span id="microsoftStatus" class="platform-status-badge">Available</span>
+                    </div>
+                    <div class="platform-item">
+                        <span class="platform-name">≡ƒ¢í∩╕Å OPNSense Firewall</span>
+                        <span id="opnsenseStatus" class="platform-status-badge">Connected</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="activity-log">
+                <h3>≡ƒô¥ Recent Activity</h3>
+                <div id="activityList" class="activity-list">
+                    <p class="no-activity">No recent activity</p>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Raspberry Pi Parental Controls ΓÇó Network + Platform Integration</p>
+            <p><small>Last Updated: <span id="lastUpdated">Never</span></small></p>
+        </footer>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <p>Processing...</p>
+    </div>
+
+    <!-- Custom JavaScript -->
+    <script src="app.js?v=11"></script>
+</body>
+</html>

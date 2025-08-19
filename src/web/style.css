@@ -462,3 +462,297 @@ footer p {
         transform: translateY(0);
     }
 }
+
+/* Nintendo Switch Device Styles */
+.nintendo-devices {
+    margin: 30px 0;
+}
+
+.nintendo-devices h3 {
+    margin-bottom: 20px;
+    color: #4a5568;
+    text-align: center;
+}
+
+.device-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 20px;
+}
+
+.device-card {
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    border: 2px solid #e2e8f0;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.device-card.online {
+    border-color: #48bb78;
+    box-shadow: 0 8px 25px rgba(72, 187, 120, 0.2);
+}
+
+.device-card.offline {
+    border-color: #fc8181;
+    box-shadow: 0 8px 25px rgba(252, 129, 129, 0.2);
+    opacity: 0.8;
+}
+
+.device-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+}
+
+.device-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.device-info {
+    flex: 1;
+}
+
+.device-name {
+    font-size: 1.3em;
+    color: #2d3748;
+    margin: 0 0 5px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.device-status {
+    font-size: 0.85em;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.device-status.online {
+    background: rgba(72, 187, 120, 0.15);
+    color: #2f855a;
+}
+
+.device-status.offline {
+    background: rgba(252, 129, 129, 0.15);
+    color: #c53030;
+}
+
+.device-location {
+    font-size: 0.9em;
+    color: #718096;
+    margin: 0;
+}
+
+.device-controls {
+    flex-shrink: 0;
+}
+
+/* Device Toggle Switch */
+.device-toggle {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 30px;
+    cursor: pointer;
+}
+
+.device-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.device-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #cbd5e0;
+    transition: all 0.3s ease;
+    border-radius: 30px;
+}
+
+.device-slider:before {
+    position: absolute;
+    content: "";
+    height: 24px;
+    width: 24px;
+    left: 3px;
+    bottom: 3px;
+    background: white;
+    transition: all 0.3s ease;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+input:checked + .device-slider {
+    background: #48bb78;
+}
+
+input:checked + .device-slider:before {
+    transform: translateX(30px);
+}
+
+/* Device Details */
+.device-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+}
+
+.device-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.stat-label {
+    font-size: 0.8em;
+    color: #718096;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-value {
+    font-size: 0.95em;
+    color: #2d3748;
+    font-weight: 600;
+}
+
+.stat-value.game-title {
+    color: #4299e1;
+    font-weight: 700;
+}
+
+.stat-value.activity-high {
+    color: #f56565;
+}
+
+.stat-value.activity-medium {
+    color: #ed8936;
+}
+
+.stat-value.activity-low {
+    color: #48bb78;
+}
+
+/* Enhanced Discovery Badge */
+.enhanced-badge {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-size: 0.7em;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+/* No Devices / Loading States */
+.no-devices, .loading-devices, .device-error {
+    text-align: center;
+    padding: 40px 20px;
+    background: rgba(247, 250, 252, 0.8);
+    border-radius: 15px;
+    border: 2px dashed #cbd5e0;
+    color: #718096;
+}
+
+.loading-devices {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.loading-devices .loading-spinner {
+    width: 30px;
+    height: 30px;
+    border-width: 3px;
+    margin-bottom: 0;
+}
+
+.device-error {
+    border-color: #fc8181;
+    color: #c53030;
+}
+
+.retry-btn {
+    background: #4299e1;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.9em;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+}
+
+.retry-btn:hover {
+    background: #3182ce;
+    transform: translateY(-1px);
+}
+
+/* Platform Status Updates */
+.platform-status-badge.active {
+    background: #c6f6d5;
+    color: #2f855a;
+}
+
+.platform-status-badge.inactive {
+    background: #fed7d7;
+    color: #c53030;
+}
+
+.platform-status-badge.loading {
+    background: #faf089;
+    color: #b7791f;
+}
+
+/* Responsive Design for Device Cards */
+@media (max-width: 768px) {
+    .device-list {
+        grid-template-columns: 1fr;
+    }
+    
+    .device-card {
+        padding: 15px;
+    }
+    
+    .device-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .device-name {
+        font-size: 1.1em;
+    }
+    
+    .device-details {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+    
+    .enhanced-badge {
+        position: static;
+        display: inline-block;
+        margin-top: 10px;
+    }
+}

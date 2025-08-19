@@ -1,0 +1,71 @@
+{
+  "timestamp": "2025-08-18T17:44:52.104553",
+  "devices": [
+    {
+      "device_id": "newswitch",
+      "device_name": "newswitch",
+      "device_type": "nintendo_switch",
+      "ip_address": "192.168.123.134",
+      "mac_address": "50-23-6D-F2-92-74",
+      "location": "Main Gaming Area",
+      "online": true,
+      "response_time_ms": 27.75,
+      "last_seen": "2025-08-18T17:44:37.948910",
+      "open_ports": [],
+      "nintendo_services": [],
+      "network_activity_level": "medium",
+      "estimated_game_active": true,
+      "current_game": "Minecraft",
+      "activity_score": 60,
+      "current_session_minutes": 0,
+      "today_play_time_minutes": 54,
+      "session_active": true,
+      "controls_enabled": true,
+      "parental_controls_enabled": true,
+      "daily_limit_minutes": 120,
+      "network_discovered": true,
+      "enhanced_discovery": true,
+      "discovery_timestamp": "2025-08-18T17:44:37.948910"
+    },
+    {
+      "device_id": "backroom",
+      "device_name": "backroom",
+      "device_type": "nintendo_switch",
+      "ip_address": "192.168.123.135",
+      "mac_address": "66-BF-27-D3-B7-22",
+      "location": "Back Room",
+      "online": true,
+      "response_time_ms": 227.82,
+      "last_seen": "2025-08-18T17:44:52.104017",
+      "open_ports": [],
+      "nintendo_services": [],
+      "network_activity_level": "low",
+      "estimated_game_active": false,
+      "current_game": "System Menu",
+      "activity_score": 25,
+      "current_session_minutes": 0,
+      "today_play_time_minutes": 1,
+      "session_active": false,
+      "controls_enabled": true,
+      "parental_controls_enabled": true,
+      "daily_limit_minutes": 120,
+      "network_discovered": true,
+      "enhanced_discovery": true,
+      "discovery_timestamp": "2025-08-18T17:44:52.104017"
+    }
+  ],
+  "device_states": {
+    "newswitch": {
+      "session_start": "2025-08-18 17:44:36.779999",
+      "total_session_time": 0,
+      "daily_total": 54.86196438333333,
+      "last_reset": "2025-08-18"
+    },
+    "backroom": {
+      "session_start": null,
+      "total_session_time": 0,
+      "daily_total": 1.4397459166666666,
+      "last_reset": "2025-08-18"
+    }
+  }
+}

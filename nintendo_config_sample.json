@@ -1,0 +1,10 @@
+{
+  "session_token": "YOUR_SESSION_TOKEN_HERE",
+  "instructions": [
+    "Replace YOUR_SESSION_TOKEN_HERE with your actual Nintendo session token",
+    "Session tokens are obtained through Nintendo's OAuth flow",
+    "They allow access to Nintendo Parental Controls API",
+    "Keep this file secure - it contains authentication credentials"
+  ],
+  "last_updated": "never"
+}

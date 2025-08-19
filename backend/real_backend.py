@@ -14,6 +14,7 @@ from datetime import datetime
 sys.path.append(str(Path(__file__).parent))
 from mac_manager import MACAddressManager
 from opnsense_integration import OPNsenseManager
+from nintendo_integration import NintendoSwitchManager
 
 app = Flask(__name__)
 CORS(app)
@@ -21,6 +22,7 @@ CORS(app)
 # Initialize managers
 mac_manager = MACAddressManager()
 opnsense_manager = OPNsenseManager()
+nintendo_manager = NintendoSwitchManager()
 
 @app.route('/api/status', methods=['GET'])
 def get_status():
@@ -338,6 +340,126 @@ def delete_device(device_id):
             'success': False,
             'error': str(e)
         }), 404
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+# Nintendo Switch API endpoints
+@app.route('/api/nintendo/status', methods=['GET'])
+def get_nintendo_status():
+    """Get Nintendo Switch parental control status"""
+    try:
+        status = nintendo_manager.get_parental_control_status()
+        return jsonify({
+            'success': True,
+            'nintendo_status': status,
+            'timestamp': datetime.now().isoformat()
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/nintendo/toggle', methods=['POST'])
+def toggle_nintendo_controls():
+    """Toggle Nintendo Switch parental controls"""
+    try:
+        data = request.get_json() or {}
+        target_state = data.get('active', False)
+        
+        if target_state:
+            success = nintendo_manager.enable_parental_controls()
+        else:
+            success = nintendo_manager.disable_parental_controls()
+        
+        return jsonify({
+            'success': success,
+            'nintendo_controls_active': target_state if success else not target_state,
+            'message': f'Nintendo Switch controls {"enabled" if target_state else "disabled"}',
+            'timestamp': datetime.now().isoformat()
+        })
+    
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/nintendo/devices', methods=['GET'])
+def get_nintendo_devices():
+    """Get Nintendo Switch devices"""
+    try:
+        devices = nintendo_manager.get_devices()
+        return jsonify({
+            'success': True,
+            'devices': devices,
+            'count': len(devices)
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/nintendo/usage', methods=['GET'])
+def get_nintendo_usage():
+    """Get Nintendo Switch usage statistics"""
+    try:
+        stats = nintendo_manager.get_usage_stats()
+        return jsonify({
+            'success': True,
+            'usage_stats': stats,
+            'timestamp': datetime.now().isoformat()
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/nintendo/playtime', methods=['POST'])
+def set_nintendo_playtime():
+    """Set Nintendo Switch play time limit"""
+    try:
+        data = request.get_json() or {}
+        minutes = data.get('minutes', 120)
+        
+        success = nintendo_manager.set_play_time_limit(minutes)
+        
+        return jsonify({
+            'success': success,
+            'play_time_limit_minutes': minutes if success else None,
+            'message': f'Play time limit set to {minutes} minutes/day' if success else 'Failed to set play time limit',
+            'timestamp': datetime.now().isoformat()
+        })
+    
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/nintendo/bedtime', methods=['POST'])
+def set_nintendo_bedtime():
+    """Set Nintendo Switch bedtime restrictions"""
+    try:
+        data = request.get_json() or {}
+        start_time = data.get('start_time', '21:00')
+        end_time = data.get('end_time', '07:00')
+        
+        success = nintendo_manager.set_bedtime_mode(start_time, end_time)
+        
+        return jsonify({
+            'success': success,
+            'bedtime_start': start_time if success else None,
+            'bedtime_end': end_time if success else None,
+            'message': f'Bedtime set: {start_time} - {end_time}' if success else 'Failed to set bedtime',
+            'timestamp': datetime.now().isoformat()
+        })
+    
     except Exception as e:
         return jsonify({
             'success': False,

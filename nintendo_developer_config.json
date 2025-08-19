@@ -1,0 +1,17 @@
+{
+  "client_id": "YOUR_NINTENDO_DEVELOPER_CLIENT_ID",
+  "client_secret": "YOUR_NINTENDO_DEVELOPER_CLIENT_SECRET",
+  "redirect_uri": "https://localhost:8080/auth/callback",
+  "scope": "parental_controls device_management user_profile",
+  "base_url": "https://api-lp1.znc.srv.nintendo.net",
+  "auth_url": "https://accounts.nintendo.com",
+  "api_version": "v1",
+  "encryption_key": "dgAg7Uvy0HRlSyHMGV1gU18gCZSOgyHyy6IA5vXs3uA=",
+  "production_mode": true,
+  "rate_limit": {
+    "requests_per_minute": 60,
+    "burst_limit": 10
+  },
+  "timeout": 30,
+  "retry_attempts": 3
+}

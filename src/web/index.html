@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Parental Controls Dashboard</title>
-    <link rel="stylesheet" href="style.css?v=2">
-    <link rel="icon" href="data:image/svg+xml,%3csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3e%3ctext y=%22.9em%22 font-size=%2290%22%3e🛡️%3c/text%3e%3c/svg%3e">
+    <title>🛡️ Parental Controls</title>
+    <link rel="stylesheet" href="style.css?v=3">
+    <link rel="icon" href="data:image/svg+xml,%3csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3e%3ctext y=%22.9em%22 font-size=%2290%22%3e🎮%3c/text%3e%3c/svg%3e">
 </head>
 <body>
     <div class="container">
         <header>
             <h1>🛡️ Parental Controls</h1>
-            <p>Simple toggle for kids' screen time and gaming access</p>
+            <p>Nintendo Switch monitoring and parental controls with real-time game detection</p>
         </header>
 
         <main>
@@ -68,25 +68,32 @@
                 </div>
             </div>
 
+            <!-- Nintendo Switch Devices -->
+            <div class="nintendo-devices">
+                <h3>🎮 Nintendo Switch Devices</h3>
+                <div id="nintendoDeviceList" class="device-list">
+                    <div class="loading-devices">
+                        <div class="loading-spinner"></div>
+                        <p>Loading Nintendo Switch devices...</p>
+                    </div>
+                </div>
+            </div>
+
             <!-- Platform Status -->
             <div class="platform-status">
-                <h3>Platform Status</h3>
+                <h3>Enhanced Discovery Status</h3>
                 <div class="platforms">
                     <div class="platform-item">
-                        <span class="platform-name">🎮 Nintendo Switch</span>
-                        <span id="nintendoStatus" class="platform-status-badge">Not Connected</span>
+                        <span class="platform-name">🎮 Nintendo Enhanced Discovery</span>
+                        <span id="nintendoStatus" class="platform-status-badge">Loading...</span>
                     </div>
                     <div class="platform-item">
-                        <span class="platform-name">📱 Google Family</span>
-                        <span id="googleStatus" class="platform-status-badge">Not Connected</span>
+                        <span class="platform-name">⚡ Real-time Monitoring</span>
+                        <span id="monitoringStatus" class="platform-status-badge">Loading...</span>
                     </div>
                     <div class="platform-item">
-                        <span class="platform-name">🖥️ Microsoft Family</span>
-                        <span id="microsoftStatus" class="platform-status-badge">Not Connected</span>
-                    </div>
-                    <div class="platform-item">
-                        <span class="platform-name">🛡️ OPNSense Firewall</span>
-                        <span id="opnsenseStatus" class="platform-status-badge">Not Connected</span>
+                        <span class="platform-name">🛡️ Backend API</span>
+                        <span id="backendStatus" class="platform-status-badge">Loading...</span>
                     </div>
                 </div>
             </div>
@@ -101,8 +108,8 @@
         </main>
 
         <footer>
-            <p>Raspberry Pi Parental Controls • Docker + nginx:8443</p>
-            <p><small>Last Updated: <span id="lastUpdated">Never</span></small></p>
+            <p>Enhanced Nintendo Switch Parental Controls • Live Discovery v2.0</p>
+            <p><small>Last Updated: <span id="lastUpdated">Never</span> • Devices: <span id="deviceCount">0</span></small></p>
         </footer>
     </div>
 
@@ -113,6 +120,6 @@
     </div>
 
     <!-- Custom JavaScript -->
-    <script src="app.js?v=2"></script>
+    <script src="app.js?v=3"></script>
 </body>
 </html>

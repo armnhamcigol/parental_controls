@@ -1,4 +1,4 @@
-// Parental Controls Dashboard JavaScript
+// Enhanced Nintendo Switch Parental Controls Dashboard JavaScript
 class ParentalControlsDashboard {
     constructor() {
         this.currentState = {
@@ -8,16 +8,18 @@ class ParentalControlsDashboard {
             systemStatus: 'loading'
         };
         
+        this.nintendoDevices = [];
         this.activityLog = [];
         this.init();
     }
 
     // Initialize the dashboard
     async init() {
-        console.log('🛡️ Initializing Parental Controls Dashboard');
+        console.log('🎮 Initializing Enhanced Nintendo Switch Parental Controls Dashboard');
         
         this.setupEventListeners();
         await this.loadStatus();
+        await this.loadNintendoDevices();
         this.startPeriodicUpdates();
         
         // Show the dashboard with fade-in effect
@@ -48,13 +50,13 @@ class ParentalControlsDashboard {
     // Load current status from API
     async loadStatus() {
         try {
-            const response = await fetch('/api/status');
+            const response = await fetch('/health');
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
             
             const data = await response.json();
-            this.updateStatus(data);
+            this.updateHealthStatus(data);
             this.updateLastUpdated();
             
         } catch (error) {
@@ -130,17 +132,33 @@ class ParentalControlsDashboard {
         }
     }
 
-    // Update platform status indicators
-    updatePlatformStatus() {
-        const platforms = ['nintendo', 'google', 'microsoft', 'opnsense'];
+    // Update health status from backend
+    updateHealthStatus(data) {
+        this.updateSystemStatus(data.status || 'unknown');
         
-        platforms.forEach(platform => {
-            const statusElement = document.getElementById(`${platform}Status`);
-            if (statusElement) {
-                statusElement.textContent = 'Simulated';
-                statusElement.className = 'platform-status-badge simulated';
-            }
-        });
+        // Update platform status indicators
+        const nintendoStatus = document.getElementById('nintendoStatus');
+        if (nintendoStatus) {
+            const status = data.components?.nintendo || 'unknown';
+            nintendoStatus.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+            nintendoStatus.className = `platform-status-badge ${status}`;
+        }
+        
+        const monitoringStatus = document.getElementById('monitoringStatus');
+        if (monitoringStatus) {
+            const status = this.nintendoDevices.length > 0 ? 'active' : 'inactive';
+            monitoringStatus.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+            monitoringStatus.className = `platform-status-badge ${status}`;
+        }
+        
+        const backendStatus = document.getElementById('backendStatus');
+        if (backendStatus) {
+            const status = data.status === 'healthy' ? 'connected' : 'disconnected';
+            backendStatus.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+            backendStatus.className = `platform-status-badge ${status}`;
+        }
+        
+        console.log('📊 Health status updated:', data);
     }
 
     // Handle toggle switch change
@@ -314,11 +332,196 @@ class ParentalControlsDashboard {
         }
     }
 
+    // Load Nintendo Switch devices
+    async loadNintendoDevices() {
+        try {
+            const response = await fetch('/api/nintendo/devices');
+            if (!response.ok) {
+                if (response.status === 401) {
+                    this.showError('Nintendo Switch not authenticated');
+                    return;
+                }
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            if (data.success) {
+                this.nintendoDevices = data.devices;
+                this.updateNintendoDeviceDisplay();
+                this.updateDeviceCount(data.count);
+                console.log('🎮 Nintendo devices loaded:', data.devices);
+            } else {
+                throw new Error(data.error || 'Failed to load devices');
+            }
+            
+        } catch (error) {
+            console.error('Failed to load Nintendo devices:', error);
+            this.showNintendoDeviceError('Failed to load Nintendo Switch devices');
+        }
+    }
+    
+    // Update Nintendo device display
+    updateNintendoDeviceDisplay() {
+        const deviceList = document.getElementById('nintendoDeviceList');
+        if (!deviceList) return;
+        
+        if (this.nintendoDevices.length === 0) {
+            deviceList.innerHTML = `
+                <div class="no-devices">
+                    <p>🎮 No Nintendo Switch devices found</p>
+                    <small>Devices will appear here when detected on the network</small>
+                </div>
+            `;
+            return;
+        }
+        
+        const html = this.nintendoDevices.map(device => `
+            <div class="device-card ${device.online ? 'online' : 'offline'}">
+                <div class="device-header">
+                    <div class="device-info">
+                        <h4 class="device-name">
+                            🎮 ${device.device_name}
+                            <span class="device-status ${device.online ? 'online' : 'offline'}">
+                                ${device.online ? '🟢 Online' : '🔴 Offline'}
+                            </span>
+                        </h4>
+                        <p class="device-location">${device.location || device.ip_address}</p>
+                    </div>
+                    <div class="device-controls">
+                        <label class="device-toggle">
+                            <input type="checkbox" 
+                                   ${device.controls_enabled ? 'checked' : ''}
+                                   onchange="toggleDeviceControls('${device.device_id}', this.checked)">
+                            <span class="device-slider"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="device-details">
+                    <div class="device-stat">
+                        <span class="stat-label">Current Game:</span>
+                        <span class="stat-value game-title">${device.current_game || 'Unknown'}</span>
+                    </div>
+                    
+                    <div class="device-stat">
+                        <span class="stat-label">Session Time:</span>
+                        <span class="stat-value">${device.current_session_minutes || 0} min</span>
+                    </div>
+                    
+                    <div class="device-stat">
+                        <span class="stat-label">Response Time:</span>
+                        <span class="stat-value">${device.response_time_ms ? device.response_time_ms.toFixed(1) : 'N/A'}ms</span>
+                    </div>
+                    
+                    <div class="device-stat">
+                        <span class="stat-label">Activity Level:</span>
+                        <span class="stat-value activity-${device.network_activity_level}">
+                            ${device.network_activity_level ? device.network_activity_level.charAt(0).toUpperCase() + device.network_activity_level.slice(1) : 'Unknown'}
+                        </span>
+                    </div>
+                    
+                    <div class="device-stat">
+                        <span class="stat-label">Daily Play Time:</span>
+                        <span class="stat-value">${device.today_play_time_minutes || 0} / ${device.daily_limit_minutes || 120} min</span>
+                    </div>
+                </div>
+                
+                ${device.enhanced_discovery ? '<div class="enhanced-badge">⚡ Enhanced Discovery</div>' : ''}
+            </div>
+        `).join('');
+        
+        deviceList.innerHTML = html;
+    }
+    
+    // Show error for Nintendo device loading
+    showNintendoDeviceError(message) {
+        const deviceList = document.getElementById('nintendoDeviceList');
+        if (deviceList) {
+            deviceList.innerHTML = `
+                <div class="device-error">
+                    <p>❌ ${message}</p>
+                    <button onclick="window.dashboard.loadNintendoDevices()" class="retry-btn">🔄 Retry</button>
+                </div>
+            `;
+        }
+    }
+    
+    // Update device count
+    updateDeviceCount(count) {
+        const deviceCountElement = document.getElementById('deviceCount');
+        if (deviceCountElement) {
+            deviceCountElement.textContent = count.toString();
+        }
+    }
+    
+    // Toggle device controls
+    async toggleDeviceControls(deviceId, targetState) {
+        console.log(`🎯 DEBUG: Starting device toggle for ${deviceId}, targetState: ${targetState}`);
+        this.showLoading(true);
+        
+        try {
+            const requestData = {
+                device_id: deviceId,
+                active: targetState
+            };
+            
+            console.log('📤 DEBUG: Sending request to /api/nintendo/device_toggle', requestData);
+            
+            const response = await fetch('/api/nintendo/device_toggle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            });
+            
+            console.log(`📥 DEBUG: Response status: ${response.status} ${response.statusText}`);
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('❌ DEBUG: Response not OK, body:', errorText);
+                throw new Error(`HTTP ${response.status}: ${response.statusText} - ${errorText}`);
+            }
+            
+            const result = await response.json();
+            console.log('📊 DEBUG: Response data:', result);
+            
+            if (result.success) {
+                console.log('✅ DEBUG: Toggle successful, showing success message');
+                this.showSuccess(result.message || `Device ${deviceId} controls ${targetState ? 'enabled' : 'disabled'}`);
+                
+                // Add visual feedback
+                this.showMessage(`🎮 ${deviceId}: Controls ${targetState ? 'enabled' : 'disabled'}`, 'info');
+                
+                // Reload devices to get updated state
+                console.log('🔄 DEBUG: Reloading devices to get updated state');
+                await this.loadNintendoDevices();
+                console.log('✅ DEBUG: Device toggle complete');
+            } else {
+                console.error('❌ DEBUG: Server returned success=false:', result);
+                throw new Error(result.error || 'Device toggle failed');
+            }
+            
+        } catch (error) {
+            console.error('❌ DEBUG: Device toggle failed with error:', error);
+            console.error('❌ DEBUG: Error stack:', error.stack);
+            this.showError(`Failed to toggle ${deviceId} controls: ${error.message}`);
+            
+            // Reload devices to reset toggle state
+            console.log('🔄 DEBUG: Reloading devices after error to reset state');
+            await this.loadNintendoDevices();
+        } finally {
+            console.log('🏁 DEBUG: Device toggle finally block, hiding loading');
+            this.showLoading(false);
+        }
+    }
+    
     // Start periodic status updates
     startPeriodicUpdates() {
         // Update every 30 seconds
         setInterval(() => {
             this.loadStatus();
+            this.loadNintendoDevices();
         }, 30000);
         
         // Update relative times every minute
@@ -371,9 +574,41 @@ async function toggleWithDuration(reason, durationMinutes) {
     }
 }
 
+// Global function for device control toggles
+async function toggleDeviceControls(deviceId, targetState) {
+    console.log(`🎮 DEBUG: Global toggleDeviceControls called with deviceId='${deviceId}', targetState=${targetState}`);
+    if (window.dashboard) {
+        console.log('✅ DEBUG: Dashboard found, calling method');
+        await window.dashboard.toggleDeviceControls(deviceId, targetState);
+    } else {
+        console.error('❌ DEBUG: window.dashboard not found!');
+        console.error('❌ DEBUG: Available on window:', Object.keys(window).filter(k => k.includes('dash')));
+    }
+}
+
 // Initialize dashboard when page loads
 document.addEventListener('DOMContentLoaded', () => {
-    window.dashboard = new ParentalControlsDashboard();
+    console.log('🚀 DEBUG: DOM loaded, initializing dashboard...');
+    try {
+        window.dashboard = new ParentalControlsDashboard();
+        console.log('✅ DEBUG: Dashboard initialized successfully');
+        
+        // Test the global function
+        window.testToggle = function() {
+            console.log('🧪 DEBUG: Test function called');
+            if (window.dashboard) {
+                console.log('✅ DEBUG: Dashboard object exists');
+                window.dashboard.toggleDeviceControls('newswitch', false);
+            } else {
+                console.error('❌ DEBUG: Dashboard object not found');
+            }
+        };
+        console.log('🧪 DEBUG: Test function created. Try: testToggle()');
+        
+    } catch (error) {
+        console.error('❌ DEBUG: Failed to initialize dashboard:', error);
+        console.error('❌ DEBUG: Error stack:', error.stack);
+    }
 });
 
 // Service Worker for offline functionality (optional)
