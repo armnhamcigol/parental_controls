@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found | Parental Controls</title>
+    <link rel="icon" href="data:image/svg+xml,%3csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3e%3ctext y=%22.9em%22 font-size=%2290%22%3e🎮%3c/text%3e%3c/svg%3e">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 600px;
+            padding: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .error-code {
+            font-size: 8rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 20px rgba(255, 255, 255, 0.5); }
+            to { text-shadow: 0 0 30px rgba(255, 255, 255, 0.8), 0 0 40px rgba(255, 255, 255, 0.3); }
+        }
+
+        .game-over {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #ff6b6b;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .message {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .sub-message {
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+            opacity: 0.7;
+        }
+
+        .controller {
+            font-size: 4rem;
+            margin: 2rem 0;
+            animation: rotate 3s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50px;
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover:before {
+            left: 100%;
+        }
+
+        .floating-icons {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .floating-icon {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0.1;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .floating-icon:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+        .floating-icon:nth-child(2) { top: 20%; right: 15%; animation-delay: 1s; }
+        .floating-icon:nth-child(3) { bottom: 30%; left: 20%; animation-delay: 2s; }
+        .floating-icon:nth-child(4) { bottom: 20%; right: 25%; animation-delay: 3s; }
+        .floating-icon:nth-child(5) { top: 50%; left: 5%; animation-delay: 4s; }
+        .floating-icon:nth-child(6) { top: 60%; right: 10%; animation-delay: 5s; }
+
+        .konami-hint {
+            position: absolute;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            opacity: 0.5;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .error-code { font-size: 6rem; }
+            .game-over { font-size: 2rem; }
+            .message { font-size: 1.2rem; }
+            .controller { font-size: 3rem; }
+            .btn { padding: 0.6rem 1.5rem; font-size: 1rem; }
+            .buttons { flex-direction: column; align-items: center; }
+        }
+
+        /* Easter egg styles */
+        .konami-activated {
+            animation: rainbow 1s linear infinite;
+        }
+
+        @keyframes rainbow {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+
+        .secret-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: #00ff00;
+            padding: 2rem;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 1.2rem;
+            display: none;
+            z-index: 1000;
+            border: 2px solid #00ff00;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-icons">
+        <div class="floating-icon">🎮</div>
+        <div class="floating-icon">🕹️</div>
+        <div class="floating-icon">🎯</div>
+        <div class="floating-icon">🏆</div>
+        <div class="floating-icon">⭐</div>
+        <div class="floating-icon">🎲</div>
+    </div>
+
+    <div class="container">
+        <div class="error-code">404</div>
+        <div class="game-over">GAME OVER</div>
+        <div class="message">Oops! This page has been blocked by parental controls! 🛡️</div>
+        <div class="sub-message">
+            Looks like you tried to access a page that doesn't exist, or maybe the controls are just being extra protective today! 😅
+        </div>
+        
+        <div class="controller">🎮</div>
+        
+        <div class="buttons">
+            <a href="/" class="btn">🏠 Go Home</a>
+            <a href="/health" class="btn">📊 System Status</a>
+            <a href="javascript:history.back()" class="btn">⏪ Go Back</a>
+            <a href="/api/status" class="btn">🔍 Check API</a>
+        </div>
+        
+        <div class="konami-hint">
+            Try the Konami Code for a surprise! ⬆️⬆️⬇️⬇️⬅️➡️⬅️➡️BA
+        </div>
+    </div>
+
+    <div class="secret-message" id="secretMessage">
+        <div style="text-align: center;">
+            <h2>🎉 KONAMI CODE ACTIVATED! 🎉</h2>
+            <p>You found the secret developer easter egg!</p>
+            <p style="margin-top: 1rem;">You clearly know your way around the system! 😎</p>
+            <button onclick="hideSecret()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #00ff00; border: none; border-radius: 5px; color: black; cursor: pointer;">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // Konami Code Easter Egg
+        let konamiCode = [];
+        const konamiSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'];
+        
+        document.addEventListener('keydown', function(e) {
+            konamiCode.push(e.code);
+            
+            // Keep only the last 10 keys
+            if (konamiCode.length > 10) {
+                konamiCode.shift();
+            }
+            
+            // Check if the sequence matches
+            if (konamiCode.length === 10 && konamiCode.every((key, index) => key === konamiSequence[index])) {
+                activateKonami();
+            }
+        });
+
+        function activateKonami() {
+            document.body.classList.add('konami-activated');
+            document.getElementById('secretMessage').style.display = 'block';
+            
+            // Play a fun sound effect if possible
+            try {
+                const audio = new Audio('data:audio/wav;base64,UklGRvQDAABXQVZFZm10IBAAAAABAAEAK...');
+                audio.play().catch(() => {}); // Ignore if audio fails
+            } catch(e) {}
+        }
+
+        function hideSecret() {
+            document.getElementById('secretMessage').style.display = 'none';
+            document.body.classList.remove('konami-activated');
+        }
+
+        // Add some random floating icons
+        function createFloatingIcon() {
+            const icons = ['🎮', '🕹️', '🎯', '🏆', '⭐', '🎲', '🚫', '🛡️', '⚡'];
+            const icon = document.createElement('div');
+            icon.classList.add('floating-icon');
+            icon.textContent = icons[Math.floor(Math.random() * icons.length)];
+            icon.style.left = Math.random() * 100 + '%';
+            icon.style.top = Math.random() * 100 + '%';
+            icon.style.animationDuration = (Math.random() * 4 + 4) + 's';
+            icon.style.animationDelay = Math.random() * 2 + 's';
+            
+            document.querySelector('.floating-icons').appendChild(icon);
+            
+            // Remove after animation completes
+            setTimeout(() => {
+                icon.remove();
+            }, 8000);
+        }
+
+        // Create new floating icons periodically
+        setInterval(createFloatingIcon, 3000);
+
+        // Add some console easter eggs for developers
+        console.log(`
+  ______ _    _ _   _   _  _    ___  _  _   
+ |  ____| |  | | \\ | | | || |  / _ \\| || |  
+ | |__  | |  | |  \\| | | || |_| | | | || |_ 
+ |  __| | |  | | . \` | |__   _| | | |__   _|
+ | |    | |__| | |\\  |    | | | |_| |  | |  
+ |_|     \\____/|_| \\_|    |_|  \\___/   |_|  
+                                            
+        `);
+        console.log('🎮 Welcome to the 404 page console!');
+        console.log('🕹️ Try typing: showEasterEgg() for a surprise!');
+        
+        window.showEasterEgg = function() {
+            console.log('🎉 You found the console easter egg!');
+            console.log('🎮 Here are some fun facts about this 404 page:');
+            console.log('• It has a Konami code easter egg!');
+            console.log('• The floating icons are randomly generated');
+            console.log('• This page was designed for a Raspberry Pi parental controls system');
+            console.log('• The error code glows with CSS animations');
+            activateKonami();
+        };
+
+        // Add a subtle parallax effect to mouse movement
+        document.addEventListener('mousemove', function(e) {
+            const moveX = (e.clientX - window.innerWidth / 2) * 0.01;
+            const moveY = (e.clientY - window.innerHeight / 2) * 0.01;
+            
+            document.querySelector('.container').style.transform = `translate(${moveX}px, ${moveY}px)`;
+        });
+
+        // Add click sound effect to buttons (if audio is supported)
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Simple click feedback
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 100);
+            });
+        });
+    </script>
+</body>
+</html>

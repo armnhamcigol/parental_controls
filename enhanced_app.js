@@ -114,6 +114,11 @@ class ParentalControlsDashboard {
 
     // Update dashboard with new status data
     updateStatus(data) {
+        if (!data) {
+            console.error('updateStatus called with undefined/null data');
+            return;
+        }
+        
         this.currentState = data;
         
         // Update toggle state
@@ -370,8 +375,13 @@ class ParentalControlsDashboard {
         const statusElement = document.getElementById('systemStatus');
         if (statusElement) {
             console.log('Status value:', status, typeof status);
-            if (status) statusElement.textContent = status.charAt(0).toUpperCase() + status.slice(1);
-            statusElement.className = `status-value ${status}`;
+            if (status && typeof status === 'string') {
+                statusElement.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+                statusElement.className = `status-value ${status}`;
+            } else {
+                statusElement.textContent = 'Unknown';
+                statusElement.className = 'status-value unknown';
+            }
         }
     }
 
@@ -537,17 +547,21 @@ class ParentalControlsDashboard {
         this.showLoading(true);
         
         try {
-            const params = new URLSearchParams({
-                active: targetState.toString(),
+            const requestData = {
+                active: targetState,
                 reason: reason
-            });
+            };
             
             if (duration) {
-                params.append('duration', duration.toString());
+                requestData.duration = duration;
             }
             
-            const response = await fetch(`/api/toggle?${params.toString()}`, {
-                method: 'POST'
+            const response = await fetch('/api/toggle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData)
             });
             
             if (!response.ok) {
