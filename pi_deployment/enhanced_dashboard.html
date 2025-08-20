@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 Enhanced Nintendo Switch Parental Controls</title>
+    <link rel="icon" href="data:image/svg+xml,%3csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3e%3ctext y=%22.9em%22 font-size=%2290%22%3e🎮%3c/text%3e%3c/svg%3e">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #312e81 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            opacity: 0;
+            animation: fadeIn 1s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .nintendo-auth-status {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: left;
+        }
+
+        /* Status Panel */
+        .status-panel {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .status-item {
+            text-align: center;
+        }
+
+        .status-label {
+            display: block;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .status-value {
+            font-size: 1.3rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .status-value.ready { color: #10b981; }
+        .status-value.error { color: #ef4444; }
+        .status-value.loading { color: #f59e0b; }
+
+        /* Toggle Section */
+        .toggle-section {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+
+        .toggle-container {
+            margin-bottom: 20px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 80px;
+            height: 40px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #64748b;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 32px;
+            width: 32px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #ef4444;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(40px);
+        }
+
+        .toggle-labels {
+            margin-top: 15px;
+        }
+
+        .toggle-label {
+            display: block;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 5px 0;
+        }
+
+        .toggle-description {
+            margin-top: 15px;
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .action-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .action-btn.emergency {
+            background: rgba(239, 68, 68, 0.8);
+        }
+
+        /* Nintendo Devices */
+        .nintendo-devices {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .device-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .device-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 20px;
+            transition: transform 0.2s ease;
+        }
+
+        .device-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .device-card.online {
+            border-left: 4px solid #10b981;
+        }
+
+        .device-card.offline {
+            border-left: 4px solid #6b7280;
+            opacity: 0.7;
+        }
+
+        .device-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .device-name {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .device-status {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .device-status.online {
+            color: #10b981;
+        }
+
+        .device-status.offline {
+            color: #6b7280;
+        }
+
+        .device-location {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .device-toggle {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .device-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .device-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #64748b;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .device-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .device-slider {
+            background-color: #10b981;
+        }
+
+        input:checked + .device-slider:before {
+            transform: translateX(24px);
+        }
+
+        .device-details {
+            margin-top: 15px;
+        }
+
+        .device-stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 8px 0;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .game-title {
+            color: #fbbf24;
+            font-style: italic;
+        }
+
+        .activity-low { color: #6b7280; }
+        .activity-medium { color: #f59e0b; }
+        .activity-high { color: #ef4444; }
+
+        /* Enhanced Controls */
+        .enhanced-controls {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .control-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .control-group label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .control-group input {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 5px;
+            color: white;
+            padding: 5px 8px;
+            width: 100px;
+            text-align: center;
+        }
+
+        .enhanced-badge, .nintendo-badge {
+            display: inline-block;
+            background: rgba(16, 185, 129, 0.8);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .nintendo-badge {
+            background: rgba(239, 68, 68, 0.8);
+        }
+
+        /* Platform Status */
+        .platform-status {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .platforms {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .platform-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+        }
+
+        .platform-status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .platform-status-badge.connected {
+            background: #10b981;
+            color: white;
+        }
+
+        .platform-status-badge.available {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .platform-status-badge.disconnected {
+            background: #6b7280;
+            color: white;
+        }
+
+        /* Messages */
+        .message {
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .message.success {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid #10b981;
+            color: #10b981;
+        }
+
+        .message.error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid #ef4444;
+            color: #ef4444;
+        }
+
+        .message.info {
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid #3b82f6;
+            color: #3b82f6;
+        }
+
+        /* Loading */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #ffffff;
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Authentication styles */
+        .auth-needed, .no-devices, .device-error {
+            text-align: center;
+            padding: 30px;
+            opacity: 0.8;
+        }
+
+        .auth-btn, .retry-btn {
+            background: rgba(59, 130, 246, 0.8);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 15px;
+            transition: background 0.3s ease;
+        }
+
+        .auth-btn:hover, .retry-btn:hover {
+            background: rgba(59, 130, 246, 1);
+        }
+
+        /* Activity Log */
+        .activity-log {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .activity-list {
+            margin-top: 15px;
+        }
+
+        .activity-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .activity-action {
+            font-weight: 600;
+        }
+
+        .activity-time {
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        .no-activity {
+            text-align: center;
+            opacity: 0.7;
+            font-style: italic;
+            padding: 20px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            opacity: 0.7;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            header h1 {
+                font-size: 2rem;
+            }
+
+            .status-panel {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .device-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎮 Enhanced Nintendo Switch Parental Controls</h1>
+            <p>Real-time device monitoring with Nintendo API integration</p>
+        </header>
+
+        <main>
+            <!-- System Status -->
+            <div class="status-panel">
+                <div class="status-item">
+                    <span class="status-label">System Status:</span>
+                    <span id="systemStatus" class="status-value">Loading...</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Last Action:</span>
+                    <span id="lastAction" class="status-value">None</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Uptime:</span>
+                    <span id="uptime" class="status-value">0s</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Devices Found:</span>
+                    <span id="deviceCount" class="status-value">0</span>
+                </div>
+            </div>
+
+            <!-- Main Toggle -->
+            <div class="toggle-section">
+                <div class="toggle-container">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="controlsToggle">
+                        <span class="slider"></span>
+                    </label>
+                    <div class="toggle-labels">
+                        <span class="toggle-label off">🎮 Gaming Allowed</span>
+                        <span class="toggle-label on">🚫 Controls Active</span>
+                    </div>
+                </div>
+                
+                <div class="toggle-description">
+                    <p id="toggleDescription">Click to toggle parental controls on/off</p>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <h3>Quick Actions</h3>
+                <div class="action-buttons">
+                    <a href="/ai-staging" class="action-btn" style="text-decoration: none; display: flex; align-items: center; justify-content: center;">
+                        🤖 Use AI to control access
+                    </a>
+                    <button class="action-btn" onclick="toggleWithReason('Kids finished chores')">
+                        ✅ Chores Complete
+                    </button>
+                    <button class="action-btn" onclick="toggleWithDuration('Break time', 30)">
+                        ⏰ 30 Min Break
+                    </button>
+                    <button class="action-btn" onclick="toggleWithDuration('Homework time', 60)">
+                        📚 1 Hour Study
+                    </button>
+                    <button class="action-btn emergency" onclick="toggleWithReason('Emergency override')">
+                        🚨 Emergency
+                    </button>
+                </div>
+            </div>
+
+            <!-- Nintendo Switch Devices -->
+            <div class="nintendo-devices">
+                <h3>🎮 Nintendo Switch Devices</h3>
+                <div id="nintendoDeviceList" class="device-list">
+                    <div class="loading-devices">
+                        <div class="loading-spinner"></div>
+                        <p>Loading Nintendo Switch devices...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Platform Status -->
+            <div class="platform-status">
+                <h3>System Status</h3>
+                <div class="platforms">
+                    <div class="platform-item">
+                        <span class="platform-name">🎮 Nintendo Discovery</span>
+                        <span id="nintendoStatus" class="platform-status-badge">Loading...</span>
+                    </div>
+                    <div class="platform-item">
+                        <span class="platform-name">⚡ Real-time Monitoring</span>
+                        <span id="monitoringStatus" class="platform-status-badge">Loading...</span>
+                    </div>
+                    <div class="platform-item">
+                        <span class="platform-name">🛡️ Backend API</span>
+                        <span id="backendStatus" class="platform-status-badge">Loading...</span>
+                    </div>
+                    <div class="platform-item">
+                        <span class="platform-name">🔐 Nintendo API</span>
+                        <span id="realNintendoStatus" class="platform-status-badge">Loading...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="activity-log">
+                <h3>Recent Activity</h3>
+                <div id="activityList" class="activity-list">
+                    <p class="no-activity">No recent activity</p>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Enhanced Nintendo Switch Parental Controls • Live Discovery & Real API Integration</p>
+            <p><small>Last Updated: <span id="lastUpdated">Never</span> • Manager: <span id="managerType">Unknown</span></small></p>
+        </footer>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <p>Processing...</p>
+    </div>
+
+    <!-- Enhanced JavaScript -->
+    <script>
+        // Enhanced Nintendo Switch Parental Controls Dashboard JavaScript
+        // Updated to use new integrated backend on port 8444
+
+        class EnhancedParentalControlsDashboard {
+            constructor() {
+                this.currentState = {
+                    controlsActive: false,
+                    lastToggleTime: null,
+                    lastToggleReason: null,
+                    systemStatus: 'loading'
+                };
+                
+                this.nintendoDevices = [];
+                this.activityLog = [];
+                this.nintendoAuthenticated = false;
+                this.init();
+            }
+
+            // Initialize the dashboard
+            async init() {
+                console.log('🎮 Initializing Enhanced Nintendo Switch Parental Controls Dashboard');
+                
+                this.setupEventListeners();
+                await this.loadStatus();
+                await this.checkNintendoAuthentication();
+                await this.loadNintendoDevices();
+                await this.loadIntegratedStatus();
+                this.startPeriodicUpdates();
+                
+                // Show the dashboard with fade-in effect
+                document.querySelector('.container').style.opacity = '1';
+            }
+
+            // Setup event listeners
+            setupEventListeners() {
+                const toggle = document.getElementById('controlsToggle');
+                if (toggle) {
+                    toggle.addEventListener('change', this.handleToggleChange.bind(this));
+                }
+
+                // Refresh status when window gains focus
+                window.addEventListener('focus', () => {
+                    this.loadStatus();
+                    this.loadNintendoDevices();
+                });
+
+                // Handle keyboard shortcuts
+                document.addEventListener('keydown', (event) => {
+                    if (event.ctrlKey && event.key === ' ') {
+                        event.preventDefault();
+                        this.toggleControls('Keyboard shortcut');
+                    }
+                });
+            }
+
+            // Load current status from API
+            async loadStatus() {
+                try {
+                    const response = await fetch('/api/status');
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const data = await response.json();
+                    this.updateStatus(data);
+                    this.updateLastUpdated();
+                    
+                } catch (error) {
+                    console.error('Failed to load status:', error);
+                    this.showError('Failed to connect to enhanced backend');
+                    this.updateSystemStatus('error');
+                }
+            }
+
+            // Check Nintendo authentication status
+            async checkNintendoAuthentication() {
+                try {
+                    const response = await fetch('/api/nintendo/integrated_status');
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.success && data.integrated_status) {
+                            this.nintendoAuthenticated = data.integrated_status.authenticated;
+                            this.updateNintendoAuthStatus(data.integrated_status);
+                        }
+                    }
+                } catch (error) {
+                    console.log('Nintendo authentication check failed:', error);
+                    this.nintendoAuthenticated = false;
+                }
+            }
+
+            // Load integrated Nintendo status
+            async loadIntegratedStatus() {
+                try {
+                    const response = await fetch('/api/nintendo/integrated_status');
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.success) {
+                            this.updateIntegratedStatus(data.integrated_status);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Failed to load integrated status:', error);
+                }
+            }
+
+            // Update integrated status display
+            updateIntegratedStatus(status) {
+                // Update platform status
+                const nintendoStatus = document.getElementById('nintendoStatus');
+                if (nintendoStatus) {
+                    const managerType = status.manager_type === 'Integrated' ? 'Enhanced' : 'Basic';
+                    nintendoStatus.textContent = `${managerType} Discovery`;
+                    nintendoStatus.className = `platform-status-badge ${status.enhanced_discovery_available ? 'connected' : 'disconnected'}`;
+                }
+                
+                const monitoringStatus = document.getElementById('monitoringStatus');
+                if (monitoringStatus) {
+                    const isActive = status.real_nintendo_available || status.enhanced_discovery_available;
+                    monitoringStatus.textContent = isActive ? 'Active' : 'Inactive';
+                    monitoringStatus.className = `platform-status-badge ${isActive ? 'connected' : 'disconnected'}`;
+                }
+
+                const realNintendoStatus = document.getElementById('realNintendoStatus');
+                if (realNintendoStatus) {
+                    const hasReal = status.real_nintendo_available && status.authenticated;
+                    realNintendoStatus.textContent = hasReal ? 'Connected' : 'Available';
+                    realNintendoStatus.className = `platform-status-badge ${hasReal ? 'connected' : 'available'}`;
+                }
+
+                const managerType = document.getElementById('managerType');
+                if (managerType) {
+                    managerType.textContent = status.manager_type || 'Unknown';
+                }
+
+                console.log('📊 Integrated status updated:', status);
+            }
+
+            // Update Nintendo auth status
+            updateNintendoAuthStatus(status) {
+                const authBadge = document.createElement('div');
+                authBadge.className = 'nintendo-auth-status';
+                authBadge.innerHTML = `
+                    <p><strong>🎮 Nintendo Integration Status:</strong></p>
+                    <p>Manager: ${status.manager_type || 'Unknown'}</p>
+                    <p>Enhanced Discovery: ${status.enhanced_discovery_available ? '✅' : '❌'}</p>
+                    <p>Real Nintendo API: ${status.real_nintendo_available ? '✅' : '❌'}</p>
+                    <p>Authenticated: ${status.authenticated ? '✅' : '❌'}</p>
+                `;
+                
+                // Add to header area
+                const header = document.querySelector('header');
+                const existingStatus = header.querySelector('.nintendo-auth-status');
+                if (existingStatus) {
+                    existingStatus.remove();
+                }
+                header.appendChild(authBadge);
+            }
+
+            // Update dashboard with new status data
+            updateStatus(data) {
+                this.currentState = data;
+                
+                // Update toggle state
+                const toggle = document.getElementById('controlsToggle');
+                if (toggle) {
+                    toggle.checked = data.controlsActive;
+                }
+                
+                // Update status display
+                this.updateSystemStatus(data.systemStatus);
+                this.updateLastAction(data.lastToggleReason, data.lastToggleTime);
+                this.updateUptime(data.uptime);
+                this.updateToggleDescription();
+                
+                // Update backend status
+                const backendStatus = document.getElementById('backendStatus');
+                if (backendStatus) {
+                    backendStatus.textContent = 'Connected';
+                    backendStatus.className = 'platform-status-badge connected';
+                }
+                
+                console.log('📊 Status updated:', data);
+            }
+
+            // Update system status indicator
+            updateSystemStatus(status) {
+                const statusElement = document.getElementById('systemStatus');
+                if (statusElement) {
+                    statusElement.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+                    statusElement.className = `status-value ${status}`;
+                }
+            }
+
+            // Update last action display
+            updateLastAction(reason, time) {
+                const actionElement = document.getElementById('lastAction');
+                if (actionElement) {
+                    if (reason && time) {
+                        const timeAgo = this.getTimeAgo(time);
+                        actionElement.textContent = `${reason} (${timeAgo})`;
+                    } else {
+                        actionElement.textContent = 'None';
+                    }
+                }
+            }
+
+            // Update uptime display
+            updateUptime(uptimeSeconds) {
+                const uptimeElement = document.getElementById('uptime');
+                if (uptimeElement && uptimeSeconds) {
+                    uptimeElement.textContent = this.formatUptime(uptimeSeconds);
+                }
+            }
+
+            // Update toggle description based on current state
+            updateToggleDescription() {
+                const descElement = document.getElementById('toggleDescription');
+                if (descElement) {
+                    if (this.currentState.controlsActive) {
+                        descElement.textContent = '🚫 Parental controls are currently ACTIVE - Gaming and apps are restricted';
+                        descElement.style.color = '#ef4444';
+                    } else {
+                        descElement.textContent = '🎮 Parental controls are currently OFF - Kids have full access';
+                        descElement.style.color = '#10b981';
+                    }
+                }
+            }
+
+            // Handle toggle switch change
+            async handleToggleChange(event) {
+                const newState = event.target.checked;
+                const reason = newState ? 'Manual activation' : 'Manual deactivation';
+                
+                await this.toggleControlsWithState(newState, reason);
+            }
+
+            // Toggle parental controls (flip current state)
+            async toggleControls(reason = 'Manual toggle', duration = null) {
+                const newState = !this.currentState.controlsActive;
+                await this.toggleControlsWithState(newState, reason, duration);
+            }
+            
+            // Toggle parental controls to specific state
+            async toggleControlsWithState(targetState, reason = 'Manual toggle', duration = null) {
+                this.showLoading(true);
+                
+                try {
+                    // Use query parameters for the enhanced backend
+                    const params = new URLSearchParams({
+                        active: targetState.toString(),
+                        reason: reason
+                    });
+                    
+                    if (duration) {
+                        params.append('duration', duration.toString());
+                    }
+                    
+                    const response = await fetch(`/api/toggle?${params.toString()}`, {
+                        method: 'POST'
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        this.currentState.controlsActive = result.controlsActive;
+                        this.updateStatus(result);
+                        this.addToActivityLog(reason, result.controlsActive);
+                        this.showSuccess(result.message);
+                        
+                        // Add visual feedback
+                        this.flashToggle();
+                        
+                        console.log('✅ Toggle successful:', result);
+                    } else {
+                        throw new Error(result.error || 'Toggle failed');
+                    }
+                    
+                } catch (error) {
+                    console.error('❌ Toggle failed:', error);
+                    this.showError(`Failed to toggle controls: ${error.message}`);
+                    
+                    // Reset toggle to previous state
+                    const toggle = document.getElementById('controlsToggle');
+                    if (toggle) {
+                        toggle.checked = this.currentState.controlsActive;
+                    }
+                } finally {
+                    this.showLoading(false);
+                }
+            }
+
+            // Load Nintendo Switch devices with authentication check
+            async loadNintendoDevices() {
+                try {
+                    // First check if we need authentication
+                    if (!this.nintendoAuthenticated) {
+                        // Try to authenticate with demo credentials
+                        await this.authenticateNintendo();
+                    }
+
+                    const response = await fetch('/api/nintendo/devices');
+                    if (!response.ok) {
+                        if (response.status === 401) {
+                            this.showNintendoAuthenticationNeeded();
+                            return;
+                        }
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const data = await response.json();
+                    if (data.success) {
+                        this.nintendoDevices = data.devices;
+                        this.updateNintendoDeviceDisplay();
+                        this.updateDeviceCount(data.count);
+                        console.log('🎮 Nintendo devices loaded:', data.devices);
+                    } else {
+                        throw new Error(data.error || 'Failed to load devices');
+                    }
+                    
+                } catch (error) {
+                    console.error('Failed to load Nintendo devices:', error);
+                    this.showNintendoDeviceError('Failed to load Nintendo Switch devices');
+                }
+            }
+
+            // Authenticate with Nintendo (demo)
+            async authenticateNintendo() {
+                try {
+                    const response = await fetch('/api/nintendo/authenticate', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            username: 'demo@example.com',
+                            password: 'demo'
+                        })
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        if (result.success) {
+                            this.nintendoAuthenticated = true;
+                            console.log('✅ Nintendo authentication successful');
+                        }
+                    }
+                } catch (error) {
+                    console.log('Nintendo authentication failed:', error);
+                }
+            }
+
+            // Show Nintendo authentication needed message
+            showNintendoAuthenticationNeeded() {
+                const deviceList = document.getElementById('nintendoDeviceList');
+                if (deviceList) {
+                    deviceList.innerHTML = `
+                        <div class="auth-needed">
+                            <p>🔐 Nintendo Switch authentication required</p>
+                            <p>The system uses demo authentication for testing.</p>
+                            <button onclick="window.dashboard.authenticateNintendo(); window.dashboard.loadNintendoDevices()" class="auth-btn">
+                                🔗 Authenticate Nintendo
+                            </button>
+                            <p><small>Real authentication is configured with session token</small></p>
+                        </div>
+                    `;
+                }
+            }
+
+            // Update Nintendo device display
+            updateNintendoDeviceDisplay() {
+                const deviceList = document.getElementById('nintendoDeviceList');
+                if (!deviceList) return;
+                
+                if (this.nintendoDevices.length === 0) {
+                    deviceList.innerHTML = `
+                        <div class="no-devices">
+                            <p>🎮 No Nintendo Switch devices found</p>
+                            <p>Devices will appear when detected on network or linked to Nintendo account</p>
+                            <button onclick="window.dashboard.loadNintendoDevices()" class="retry-btn">🔄 Refresh</button>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const html = this.nintendoDevices.map(device => `
+                    <div class="device-card ${device.online ? 'online' : 'offline'}">
+                        <div class="device-header">
+                            <div class="device-info">
+                                <h4 class="device-name">
+                                    🎮 ${device.device_name}
+                                    <span class="device-status ${device.online ? 'online' : 'offline'}">
+                                        ${device.online ? '🟢 Online' : '🔴 Offline'}
+                                    </span>
+                                </h4>
+                                <p class="device-location">${device.location || device.ip_address}</p>
+                            </div>
+                            <div class="device-controls">
+                                <label class="device-toggle">
+                                    <input type="checkbox" 
+                                           ${device.controls_enabled ? 'checked' : ''}
+                                           onchange="toggleDeviceControls('${device.device_id}', this.checked)">
+                                    <span class="device-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="device-details">
+                            <div class="device-stat">
+                                <span class="stat-label">Current Game:</span>
+                                <span class="stat-value game-title">${device.current_game || 'Unknown'}</span>
+                            </div>
+                            
+                            <div class="device-stat">
+                                <span class="stat-label">Session Time:</span>
+                                <span class="stat-value">${device.current_session_minutes || 0} min</span>
+                            </div>
+                            
+                            <div class="device-stat">
+                                <span class="stat-label">Response Time:</span>
+                                <span class="stat-value">${device.response_time_ms ? device.response_time_ms.toFixed(1) : 'N/A'}ms</span>
+                            </div>
+                            
+                            <div class="device-stat">
+                                <span class="stat-label">Activity Level:</span>
+                                <span class="stat-value activity-${device.network_activity_level}">
+                                    ${device.network_activity_level ? device.network_activity_level.charAt(0).toUpperCase() + device.network_activity_level.slice(1) : 'Unknown'}
+                                </span>
+                            </div>
+                            
+                            <div class="device-stat">
+                                <span class="stat-label">Daily Play Time:</span>
+                                <span class="stat-value">${device.today_play_time_minutes || 0} / ${device.daily_limit_minutes || 120} min</span>
+                            </div>
+
+                            <!-- Enhanced Controls -->
+                            <div class="enhanced-controls">
+                                <div class="control-group">
+                                    <label>Time Limit (minutes):</label>
+                                    <input type="number" value="${device.daily_limit_minutes || 120}" min="0" max="1440" 
+                                           onchange="setTimeLimit('${device.device_id}', this.value)">
+                                </div>
+                                <div class="control-group">
+                                    <label>Bedtime:</label>
+                                    <input type="time" value="21:00" 
+                                           onchange="setBedtime('${device.device_id}', this.value)">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        ${device.enhanced_discovery ? '<div class="enhanced-badge">⚡ Enhanced Discovery</div>' : ''}
+                        ${device.real_nintendo_controls ? '<div class="nintendo-badge">🎮 Real Nintendo API</div>' : ''}
+                    </div>
+                `).join('');
+                
+                deviceList.innerHTML = html;
+            }
+            
+            // Toggle device controls using new API
+            async toggleDeviceControls(deviceId, targetState) {
+                console.log(`🎯 Toggling controls for ${deviceId}: ${targetState}`);
+                this.showLoading(true);
+                
+                try {
+                    const requestData = {
+                        device_id: deviceId,
+                        active: targetState
+                    };
+                    
+                    const response = await fetch('/api/nintendo/device_toggle', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestData)
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        this.showSuccess(result.message || `${deviceId} controls ${targetState ? 'enabled' : 'disabled'}`);
+                        await this.loadNintendoDevices(); // Reload to get updated state
+                    } else {
+                        throw new Error(result.error || 'Device toggle failed');
+                    }
+                    
+                } catch (error) {
+                    console.error('❌ Device toggle failed:', error);
+                    this.showError(`Failed to toggle ${deviceId} controls: ${error.message}`);
+                    await this.loadNintendoDevices(); // Reload to reset state
+                } finally {
+                    this.showLoading(false);
+                }
+            }
+
+            // Set time limit for device
+            async setTimeLimit(deviceId, minutes) {
+                console.log(`⏰ Setting time limit for ${deviceId}: ${minutes} minutes`);
+                
+                try {
+                    const response = await fetch('/api/nintendo/set_time_limit', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            device_id: deviceId,
+                            minutes: parseInt(minutes)
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        const result = await response.json();
+                        if (result.success) {
+                            this.showSuccess(`Time limit set to ${minutes} minutes for ${deviceId}`);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Failed to set time limit:', error);
+                    this.showError('Failed to set time limit');
+                }
+            }
+
+            // Set bedtime for device
+            async setBedtime(deviceId, timeString) {
+                console.log(`🌙 Setting bedtime for ${deviceId}: ${timeString}`);
+                
+                try {
+                    const [hours, minutes] = timeString.split(':').map(Number);
+                    
+                    const response = await fetch('/api/nintendo/set_bedtime', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            device_id: deviceId,
+                            bedtime_hour: hours,
+                            bedtime_minute: minutes
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        const result = await response.json();
+                        if (result.success) {
+                            this.showSuccess(`Bedtime set to ${timeString} for ${deviceId}`);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Failed to set bedtime:', error);
+                    this.showError('Failed to set bedtime');
+                }
+            }
+
+            // Add flash effect to toggle
+            flashToggle() {
+                const toggleSection = document.querySelector('.toggle-section');
+                if (toggleSection) {
+                    toggleSection.style.transform = 'scale(1.05)';
+                    setTimeout(() => {
+                        toggleSection.style.transform = 'scale(1)';
+                    }, 200);
+                }
+            }
+
+            // Add activity to log
+            addToActivityLog(action, controlsActive) {
+                const activity = {
+                    action: `${action} - Controls ${controlsActive ? 'activated' : 'deactivated'}`,
+                    timestamp: new Date().toISOString(),
+                    type: controlsActive ? 'activation' : 'deactivation'
+                };
+                
+                this.activityLog.unshift(activity);
+                
+                // Keep only last 10 activities
+                if (this.activityLog.length > 10) {
+                    this.activityLog = this.activityLog.slice(0, 10);
+                }
+                
+                this.updateActivityDisplay();
+            }
+
+            // Update activity log display
+            updateActivityDisplay() {
+                const activityList = document.getElementById('activityList');
+                if (!activityList) return;
+                
+                if (this.activityLog.length === 0) {
+                    activityList.innerHTML = '<p class="no-activity">No recent activity</p>';
+                    return;
+                }
+                
+                const html = this.activityLog.map(activity => `
+                    <div class="activity-item">
+                        <span class="activity-action">${activity.action}</span>
+                        <span class="activity-time">${this.getTimeAgo(activity.timestamp)}</span>
+                    </div>
+                `).join('');
+                
+                activityList.innerHTML = html;
+            }
+
+            // Show loading overlay
+            showLoading(show = true) {
+                const overlay = document.getElementById('loadingOverlay');
+                if (overlay) {
+                    if (show) {
+                        overlay.classList.add('active');
+                    } else {
+                        overlay.classList.remove('active');
+                    }
+                }
+            }
+
+            // Show success message
+            showSuccess(message) {
+                this.showMessage(message, 'success');
+            }
+
+            // Show error message
+            showError(message) {
+                this.showMessage(message, 'error');
+            }
+
+            // Show message with auto-dismiss
+            showMessage(message, type = 'info') {
+                // Remove existing messages
+                const existingMessages = document.querySelectorAll('.message');
+                existingMessages.forEach(msg => msg.remove());
+                
+                // Create new message
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${type}`;
+                messageDiv.textContent = message;
+                
+                // Insert after status panel
+                const statusPanel = document.querySelector('.status-panel');
+                if (statusPanel) {
+                    statusPanel.insertAdjacentElement('afterend', messageDiv);
+                }
+                
+                // Auto-dismiss after 5 seconds
+                setTimeout(() => {
+                    if (messageDiv.parentNode) {
+                        messageDiv.remove();
+                    }
+                }, 5000);
+            }
+
+            // Show error for Nintendo device loading
+            showNintendoDeviceError(message) {
+                const deviceList = document.getElementById('nintendoDeviceList');
+                if (deviceList) {
+                    deviceList.innerHTML = `
+                        <div class="device-error">
+                            <p>❌ ${message}</p>
+                            <button onclick="window.dashboard.loadNintendoDevices()" class="retry-btn">🔄 Retry</button>
+                        </div>
+                    `;
+                }
+            }
+            
+            // Update device count
+            updateDeviceCount(count) {
+                const deviceCountElement = document.getElementById('deviceCount');
+                if (deviceCountElement) {
+                    deviceCountElement.textContent = count.toString();
+                }
+            }
+
+            // Update last updated timestamp
+            updateLastUpdated() {
+                const lastUpdatedElement = document.getElementById('lastUpdated');
+                if (lastUpdatedElement) {
+                    lastUpdatedElement.textContent = new Date().toLocaleTimeString();
+                }
+            }
+            
+            // Start periodic status updates
+            startPeriodicUpdates() {
+                // Update every 30 seconds
+                setInterval(() => {
+                    this.loadStatus();
+                    this.loadNintendoDevices();
+                    this.loadIntegratedStatus();
+                }, 30000);
+                
+                // Update relative times every minute
+                setInterval(() => {
+                    this.updateActivityDisplay();
+                    this.updateLastAction(this.currentState.lastToggleReason, this.currentState.lastToggleTime);
+                }, 60000);
+            }
+
+            // Utility: Get time ago string
+            getTimeAgo(timestamp) {
+                if (!timestamp) return '';
+                
+                const now = new Date();
+                const time = new Date(timestamp);
+                const diffMs = now - time;
+                const diffMins = Math.floor(diffMs / 60000);
+                const diffHours = Math.floor(diffMins / 60);
+                const diffDays = Math.floor(diffHours / 24);
+                
+                if (diffDays > 0) return `${diffDays}d ago`;
+                if (diffHours > 0) return `${diffHours}h ago`;
+                if (diffMins > 0) return `${diffMins}m ago`;
+                return 'Just now';
+            }
+
+            // Utility: Format uptime
+            formatUptime(seconds) {
+                const days = Math.floor(seconds / 86400);
+                const hours = Math.floor((seconds % 86400) / 3600);
+                const minutes = Math.floor((seconds % 3600) / 60);
+                
+                if (days > 0) return `${days}d ${hours}h ${minutes}m`;
+                if (hours > 0) return `${hours}h ${minutes}m`;
+                if (minutes > 0) return `${minutes}m`;
+                return `${Math.floor(seconds)}s`;
+            }
+        }
+
+        // Global functions for quick action buttons
+        async function toggleWithReason(reason) {
+            if (window.dashboard) {
+                await window.dashboard.toggleControls(reason);
+            }
+        }
+
+        async function toggleWithDuration(reason, durationMinutes) {
+            if (window.dashboard) {
+                await window.dashboard.toggleControls(reason, durationMinutes);
+            }
+        }
+
+        // Global function for device control toggles
+        async function toggleDeviceControls(deviceId, targetState) {
+            if (window.dashboard) {
+                await window.dashboard.toggleDeviceControls(deviceId, targetState);
+            }
+        }
+
+        // Global function for time limit setting
+        async function setTimeLimit(deviceId, minutes) {
+            if (window.dashboard) {
+                await window.dashboard.setTimeLimit(deviceId, minutes);
+            }
+        }
+
+        // Global function for bedtime setting
+        async function setBedtime(deviceId, timeString) {
+            if (window.dashboard) {
+                await window.dashboard.setBedtime(deviceId, timeString);
+            }
+        }
+
+        // Initialize dashboard when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Initializing Enhanced Nintendo Switch Parental Controls Dashboard...');
+            try {
+                window.dashboard = new EnhancedParentalControlsDashboard();
+                console.log('✅ Enhanced Dashboard initialized successfully');
+            } catch (error) {
+                console.error('❌ Failed to initialize dashboard:', error);
+            }
+        });
+    </script>
+</body>
+</html>

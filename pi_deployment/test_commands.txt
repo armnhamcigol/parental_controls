@@ -1,0 +1,56 @@
+# AI Parental Controls - Test Commands
+# Run these in PowerShell while the server is running
+
+# 1. Test System Status
+curl -X POST "http://127.0.0.1:5000/api/ai-staging/chat" `
+  -H "Content-Type: application/json" `
+  -H "X-API-Key: test-api-key-staging-12345" `
+  -d '{
+    "message": "What is the current system status?",
+    "session_id": "test-session"
+  }'
+
+# 2. Test Device Listing  
+curl -X POST "http://127.0.0.1:5000/api/ai-staging/chat" `
+  -H "Content-Type: application/json" `
+  -H "X-API-Key: test-api-key-staging-12345" `
+  -d '{
+    "message": "Show me all devices",
+    "session_id": "test-session"
+  }'
+
+# 3. Test Blocking All Devices
+curl -X POST "http://127.0.0.1:5000/api/ai-staging/chat" `
+  -H "Content-Type: application/json" `
+  -H "X-API-Key: test-api-key-staging-12345" `
+  -d '{
+    "message": "Block all devices now",
+    "session_id": "test-session"
+  }'
+
+# 4. Test Unblocking All Devices
+curl -X POST "http://127.0.0.1:5000/api/ai-staging/chat" `
+  -H "Content-Type: application/json" `
+  -H "X-API-Key: test-api-key-staging-12345" `
+  -d '{
+    "message": "Turn off parental controls",
+    "session_id": "test-session"
+  }'
+
+# 5. Test Adding a Device
+curl -X POST "http://127.0.0.1:5000/api/ai-staging/chat" `
+  -H "Content-Type: application/json" `
+  -H "X-API-Key: test-api-key-staging-12345" `
+  -d '{
+    "message": "Add a new device called Test Phone with MAC AA:BB:CC:DD:EE:88",
+    "session_id": "test-session"
+  }'
+
+# 6. Test Conversational AI
+curl -X POST "http://127.0.0.1:5000/api/ai-staging/chat" `
+  -H "Content-Type: application/json" `
+  -H "X-API-Key: test-api-key-staging-12345" `
+  -d '{
+    "message": "How do the parental controls work?",
+    "session_id": "test-session"
+  }'
