@@ -313,9 +313,13 @@ The system creates:
 4. Check OPNsense logs for blocked traffic
 
 ### Toggle Not Working
-1. Open browser developer tools (F12) and check console for errors
-2. Clear browser cache and hard refresh (Ctrl+Shift+R)
-3. Check backend API status: `curl http://pi-ip:3001/api/status`
+1. **HTTP 500 Error**: If toggle returns "Failed to update MAC address alias":
+   - **Cause**: No devices configured in the system
+   - **Solution**: Add at least one device before toggling controls
+   - **Example**: `curl -X POST http://pi-ip:3001/api/mac/devices -H "Content-Type: application/json" -d '{"name": "Test Device", "mac": "AA:BB:CC:DD:EE:FF"}'`
+2. Open browser developer tools (F12) and check console for errors
+3. Clear browser cache and hard refresh (Ctrl+Shift+R)
+4. Check backend API status: `curl http://pi-ip:3001/api/status`
 
 ## 📊 API Reference
 
